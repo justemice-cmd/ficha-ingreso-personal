@@ -167,6 +167,8 @@
   .btn-secondary{background:#fff;border:1px solid var(--line);color:var(--ink);}
   .conditional{display:none;}
   .conditional.show{display:grid;}
+  .card.conditional{display:none;}
+  .card.conditional.show{display:block;}
   .section-note{
     font-size:11.5px;color:var(--muted);
     grid-column:1/-1;margin:-4px 0 2px;
@@ -256,6 +258,13 @@
           <input type="text" name="cargo" required placeholder="Ej. Asistente contable"></div>
         <div class="f"><label>Área / Departamento <span class="req">*</span></label>
           <input type="text" name="area" required placeholder="Ej. Contabilidad"></div>
+        <div class="f"><label>¿Es personal de conducción? <span class="req">*</span></label>
+          <select name="esConductor" required onchange="toggleConductorSection(this)">
+            <option value="">Seleccione</option>
+            <option value="No">No</option>
+            <option value="Si">Sí, conduce una unidad de la empresa</option>
+          </select>
+        </div>
         <div class="f"><label>Jefe inmediato</label>
           <input type="text" name="jefeInmediato"></div>
         <div class="f"><label>Tipo de contrato <span class="req">*</span></label>
@@ -275,6 +284,7 @@
             <option>Tiempo completo (48 h/semana)</option>
             <option>Tiempo parcial (menos de 4 h/día)</option>
             <option>Turnos rotativos</option>
+            <option>Lunes a sábado - según programación</option>
           </select>
         </div>
         <div class="f"><label>Hora de ingreso (Lunes a Viernes) <span class="req">*</span></label>
@@ -287,8 +297,74 @@
         </div>
         <div class="f"><label>Hora de salida (Sábado)</label>
           <input type="time" name="horaSalidaSab"></div>
-        <div class="f"><label>Remuneración bruta mensual (S/) <span class="req">*</span></label>
+        <div class="f"><label>Remuneración bruta (S/) <span class="req">*</span></label>
           <input type="number" name="remuneracion" min="0" step="0.01" required></div>
+        <div class="f"><label>Modalidad de pago <span class="req">*</span></label>
+          <select name="modalidadPago" required>
+            <option value="">Seleccione</option>
+            <option>Mensual</option>
+            <option>Quincenal</option>
+          </select>
+        </div>
+        <div class="f"><label>¿Recibe bono?</label>
+          <select name="recibeBono" onchange="toggleConditional(this,'bonoMontoBox','Si')">
+            <option value="No">No</option>
+            <option value="Si">Sí</option>
+          </select>
+        </div>
+        <div class="f conditional" id="bonoMontoBox">
+          <label>Monto del bono (S/)</label>
+          <input type="number" name="montoBono" min="0" step="0.01"></div>
+        <div class="f"><label>¿Recibe viáticos?</label>
+          <select name="recibeViatico" onchange="toggleConditional(this,'viaticoMontoBox','Si')">
+            <option value="No">No</option>
+            <option value="Si">Sí</option>
+          </select>
+        </div>
+        <div class="f conditional" id="viaticoMontoBox">
+          <label>Monto de viáticos (S/)</label>
+          <input type="number" name="montoViatico" min="0" step="0.01"></div>
+      </div>
+    </div>
+
+    <!-- 1B. DATOS DEL VEHÍCULO Y LICENCIA (solo conductores) -->
+    <div class="card conditional" id="conductorCard">
+      <h2><span class="n">1B</span>Datos de licencia de conducir y unidad asignada</h2>
+      <div class="body cols3">
+        <div class="f"><label>Categoría de licencia de conducir <span class="req">*</span></label>
+          <select name="categoriaLicencia">
+            <option value="">Seleccione</option>
+            <option>AI</option>
+            <option>AIIa</option>
+            <option>AIIb</option>
+            <option>AIIIa</option>
+            <option>AIIIb</option>
+            <option>AIIIc</option>
+          </select>
+        </div>
+        <div class="f"><label>Número de licencia de conducir <span class="req">*</span></label>
+          <input type="text" name="numLicencia"></div>
+        <div class="f"><label>Fecha de vencimiento de licencia <span class="req">*</span></label>
+          <input type="date" name="vencimientoLicencia"></div>
+        <div class="f full"><label>Tipo de unidad asignada <span class="req">*</span></label>
+          <input type="text" name="tipoUnidad" placeholder="Ej. Semi trailer local, furgón, camión cisterna, etc."></div>
+        <div class="f"><label>Ruta</label>
+          <select name="tipoRuta">
+            <option value="">Seleccione</option>
+            <option value="Local">Local</option>
+            <option value="Provincial">Provincial</option>
+          </select>
+        </div>
+        <div class="f"><label>Talla de polo</label>
+          <select name="tallaPolo">
+            <option value="">Seleccione</option>
+            <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option>
+          </select>
+        </div>
+        <div class="f"><label>Talla de pantalón</label>
+          <input type="text" name="tallaPantalon" placeholder="Ej. 30"></div>
+        <div class="f full"><label>Talla de zapato</label>
+          <input type="text" name="tallaZapato" placeholder="Ej. 39" style="max-width:120px;"></div>
       </div>
     </div>
 
@@ -371,9 +447,9 @@
       </div>
     </div>
 
-    <!-- 4. DATOS ACADÉMICOS -->
+    <!-- 4. DATOS ACADÉMICOS Y EXPERIENCIA LABORAL -->
     <div class="card">
-      <h2><span class="n">4</span>Datos académicos</h2>
+      <h2><span class="n">4</span>Estudios y experiencia laboral</h2>
       <div class="body">
         <div class="f"><label>Grado de instrucción <span class="req">*</span></label>
           <select name="gradoInstruccion" required>
@@ -387,6 +463,16 @@
         </div>
         <div class="f"><label>Profesión / Especialidad</label>
           <input type="text" name="profesion"></div>
+        <div class="f"><label>Carrera (si aplica)</label>
+          <input type="text" name="carrera"></div>
+        <div class="f"><label>Centro de estudios</label>
+          <input type="text" name="centroEstudios"></div>
+        <div class="f full"><label>Periodo de estudios</label>
+          <input type="text" name="periodoEstudios" placeholder="Ej. 2015 - 2019"></div>
+        <div class="f full"><label>Experiencia laboral previa (últimos 2-3 trabajos)</label>
+          <textarea name="experienciaLaboral" rows="4" placeholder="Uno por línea. Ej.: Conductor, Transporte Yobel, 2018-2020, referencia 987654321"></textarea>
+          <span class="hint">Indique cargo, empresa, periodo y, si tiene, un teléfono de referencia.</span>
+        </div>
       </div>
     </div>
 
@@ -416,6 +502,14 @@
           <label>CUSPP (código único de identificación AFP)</label>
           <input type="text" name="cuspp" placeholder="Si no lo recuerda, RR.HH. lo verificará en SBS">
         </div>
+        <div class="f conditional" id="comisionAfpBox">
+          <label>Tipo de comisión AFP</label>
+          <select name="comisionAfp">
+            <option value="">Seleccione</option>
+            <option>Flujo</option>
+            <option>Mixta</option>
+          </select>
+        </div>
         <div class="f full section-note" id="pensionNote" style="display:none;"></div>
       </div>
     </div>
@@ -443,6 +537,8 @@
             <option>Cuenta corriente</option>
           </select>
         </div>
+        <div class="f"><label>Número de cuenta</label>
+          <input type="text" name="numCuenta" placeholder="Sin guiones ni espacios"></div>
         <div class="f full"><label>Código de cuenta interbancaria - CCI (20 dígitos) <span class="req">*</span></label>
           <input type="text" name="cci" required maxlength="20" pattern="[0-9]{20}" placeholder="00000000000000000000">
           <span class="hint">Obligatorio desde 2018 (RM 242-2017-TR). Si no tiene cuenta, RR.HH. puede orientarlo para abrir una cuenta sueldo solo con su DNI.</span>
@@ -479,6 +575,8 @@
           <input type="text" name="emergenciaParentesco" required></div>
         <div class="f"><label>Teléfono <span class="req">*</span></label>
           <input type="tel" name="emergenciaTelefono" required></div>
+        <div class="f"><label>Ocupación</label>
+          <input type="text" name="emergenciaOcupacion"></div>
         <div class="f"><label>Dirección (opcional)</label>
           <input type="text" name="emergenciaDireccion"></div>
       </div>
@@ -499,6 +597,41 @@
         </div>
         <div class="f"><label>¿Tiene alguna condición médica que RR.HH. deba conocer?</label>
           <input type="text" name="condicionMedica" placeholder="Alergias, tratamientos, etc. (opcional)"></div>
+      </div>
+    </div>
+
+    <!-- 10. CHECKLIST DE DOCUMENTOS -->
+    <div class="card">
+      <h2><span class="n">10</span>Documentos para su legajo personal</h2>
+      <div class="body">
+        <div class="f full" style="font-size:12px;color:var(--muted);margin-bottom:-4px;">
+          Marque los documentos que ya tiene disponibles para entregar a RR.HH. Esta declaración no reemplaza la entrega física; es solo para que RR.HH. sepa qué le falta antes de su firma de contrato.
+        </div>
+        <div class="f full">
+          <div class="checkbox-row"><input type="checkbox" name="docDni"><span>Copia de DNI vigente</span></div>
+        </div>
+        <div class="f full conditional" id="docLicenciaBox">
+          <div class="checkbox-row"><input type="checkbox" name="docLicencia"><span>Copia de licencia de conducir (solo personal de conducción)</span></div>
+        </div>
+        <div class="f full">
+          <div class="checkbox-row"><input type="checkbox" name="docAntecedentes"><span>Certificado de antecedentes penales y policiales</span></div>
+        </div>
+        <div class="f full">
+          <div class="checkbox-row"><input type="checkbox" name="docDeclaracionDomicilio"><span>Declaración jurada de domicilio</span></div>
+        </div>
+        <div class="f full">
+          <div class="checkbox-row"><input type="checkbox" name="docReciboServicios"><span>Copia de recibo de luz o agua</span></div>
+        </div>
+        <div class="f full">
+          <div class="checkbox-row"><input type="checkbox" name="docCarnetSanidad"><span>Carné de sanidad / certificado médico</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. DECLARACIÓN DE VERACIDAD -->
+    <div class="card">
+      <h2><span class="n">11</span>Declaración de veracidad</h2>
+      <div class="body">
         <div class="f full">
           <div class="checkbox-row">
             <input type="checkbox" name="declaracionVeracidad" id="declaracionVeracidad" required>
@@ -539,17 +672,39 @@ function toggleConditional(selectEl, boxId, triggerValue){
   else { box.classList.remove("show"); }
 }
 
+function toggleConductorSection(selectEl){
+  const card = document.getElementById('conductorCard');
+  const docLicenciaBox = document.getElementById('docLicenciaBox');
+  const camposConductor = card.querySelectorAll('select, input');
+  if(selectEl.value === 'Si'){
+    card.classList.add('show');
+    docLicenciaBox.classList.add('show');
+    camposConductor.forEach(el=>{
+      if(el.name === 'categoriaLicencia' || el.name === 'numLicencia' || el.name === 'vencimientoLicencia' || el.name === 'tipoUnidad'){
+        el.required = true;
+      }
+    });
+  } else {
+    card.classList.remove('show');
+    docLicenciaBox.classList.remove('show');
+    camposConductor.forEach(el=>{ el.required = false; });
+  }
+}
+
 function updatePension(){
   const val = document.querySelector('input[name="afiliadoPension"]:checked')?.value;
   const afpBox = document.getElementById('afpNombreBox');
   const cusppBox = document.getElementById('cusppBox');
+  const comisionBox = document.getElementById('comisionAfpBox');
   const note = document.getElementById('pensionNote');
   afpBox.classList.remove('show');
   cusppBox.classList.remove('show');
+  comisionBox.classList.remove('show');
   note.style.display = 'none';
   if(val === 'AFP'){
     afpBox.classList.add('show');
     cusppBox.classList.add('show');
+    comisionBox.classList.add('show');
   } else if(val === 'ONP'){
     note.style.display = 'block';
     note.textContent = 'RR.HH. registrará su continuidad en el régimen ONP (Decreto Ley 19990) en el T-Registro.';
@@ -574,115 +729,257 @@ function generatePdf(r){
   const doc = new jsPDF({unit:'mm', format:'a4'});
   const navy = [28,45,74];
   const gold = [184,134,44];
-  const gray = [107,111,99];
-  let y = 18;
+  const gray = [90,93,86];
+  const lineColor = [200,196,184];
+  const pageW = 210;
+  const marginL = 12;
+  const marginR = 198;
+  let y = 14;
 
-  doc.setFillColor(...navy);
-  doc.rect(0,0,210,16,'F');
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(13);
-  doc.setFont('helvetica','bold');
-  doc.text('FICHA DE INGRESO DE PERSONAL', 105, 10, {align:'center'});
+  function checkPageBreak(needed){
+    if(y + needed > 285){ doc.addPage(); y = 14; }
+  }
 
-  y = 24;
-  doc.setTextColor(...gray);
-  doc.setFontSize(9);
-  doc.setFont('helvetica','normal');
-  const fecha = r._timestamp ? new Date(r._timestamp).toLocaleString('es-PE') : '';
-  doc.text(`Empresa: ${r.empresa||'-'}    |    Fecha de registro: ${fecha}`, 14, y);
-  y += 8;
-
-  function section(title){
-    doc.setFillColor(...gold);
-    doc.rect(14, y, 182, 6, 'F');
-    doc.setTextColor(28,20,4);
-    doc.setFontSize(10);
+  function label(text, x, yy, opts){
     doc.setFont('helvetica','bold');
-    doc.text(title, 16, y+4.3);
-    y += 10;
-    doc.setTextColor(34,37,31);
+    doc.setFontSize(8);
+    doc.setTextColor(...gray);
+    doc.text(text, x, yy, opts||{});
+  }
+  function value(text, x, yy, opts){
     doc.setFont('helvetica','normal');
     doc.setFontSize(9.5);
+    doc.setTextColor(20,20,20);
+    doc.text(String(text||'-'), x, yy, opts||{});
   }
-
-  function row(label, value){
-    if(y > 275){ doc.addPage(); y = 18; }
+  function sectionBar(title){
+    checkPageBreak(10);
+    doc.setFillColor(...navy);
+    doc.rect(marginL, y, marginR-marginL, 6, 'F');
+    doc.setTextColor(255,255,255);
     doc.setFont('helvetica','bold');
-    doc.text(`${label}:`, 16, y);
-    doc.setFont('helvetica','normal');
-    const text = String(value || '-');
-    const lines = doc.splitTextToSize(text, 120);
-    doc.text(lines, 75, y);
-    y += 6 * Math.max(1, lines.length);
+    doc.setFontSize(9.5);
+    doc.text(title, marginL+2, y+4.3);
+    y += 9;
+  }
+  function hr(){
+    doc.setDrawColor(...lineColor);
+    doc.line(marginL, y, marginR, y);
+    y += 4;
   }
 
-  section('1. Datos del puesto');
-  row('Empresa', r.empresa);
-  row('Fecha de ingreso', r.fechaIngreso);
-  row('Cargo', r.cargo);
-  row('Área', r.area);
-  row('Jefe inmediato', r.jefeInmediato);
-  row('Tipo de contrato', r.tipoContrato);
-  row('Jornada', r.jornada);
-  row('Horario Lunes a Viernes', (r.horaIngresoLV && r.horaSalidaLV) ? `${r.horaIngresoLV} a ${r.horaSalidaLV}` : '-');
-  row('Horario Sábado', (r.horaIngresoSab && r.horaSalidaSab) ? `${r.horaIngresoSab} a ${r.horaSalidaSab}` : 'No labora sábados');
-  row('Remuneración bruta mensual', r.remuneracion ? `S/ ${r.remuneracion}` : '-');
-
-  section('2. Datos personales');
-  row('Tipo y número de documento', `${r.tipoDoc||''} ${r.numDoc||''}`);
-  row('Apellido paterno', r.apellidoPaterno);
-  row('Apellido materno', r.apellidoMaterno);
-  row('Nombres', r.nombres);
-  row('Fecha de nacimiento', r.fechaNacimiento);
-  row('Sexo', r.sexo);
-  row('Nacionalidad', r.nacionalidad);
-  row('Estado civil', r.estadoCivil);
-  row('Discapacidad', r.discapacidad === 'Si' ? `Sí - ${r.discapacidadDetalle||''}` : 'No');
-
-  section('3. Domicilio y contacto');
-  row('Dirección', r.direccion);
-  row('Departamento / Provincia / Distrito', `${r.departamento||''} / ${r.provincia||''} / ${r.distrito||''}`);
-  row('Celular', r.celular);
-  row('Teléfono fijo', r.telefonoFijo);
-  row('Correo electrónico', r.correo);
-
-  section('4. Datos académicos');
-  row('Grado de instrucción', r.gradoInstruccion);
-  row('Profesión / especialidad', r.profesion);
-
-  section('5. Régimen pensionario');
-  row('Afiliación', r.afiliadoPension);
-  row('AFP', r.afpNombre);
-  row('CUSPP', r.cuspp);
-
-  section('6. Datos bancarios');
-  row('Banco', r.banco);
-  row('Tipo de cuenta', r.tipoCuenta);
-  row('CCI', r.cci);
-
-  section('7. EsSalud y derechohabientes');
-  row('¿Registra derechohabientes?', r.tieneDerechohabientes);
-  row('Detalle', r.derechohabientesDetalle);
-
-  section('8. Contacto de emergencia');
-  row('Nombre', r.emergenciaNombre);
-  row('Parentesco', r.emergenciaParentesco);
-  row('Teléfono', r.emergenciaTelefono);
-  row('Dirección', r.emergenciaDireccion);
-
-  section('9. Seguridad y salud en el trabajo');
-  row('Grupo sanguíneo', r.grupoSanguineo);
-  row('Condición médica declarada', r.condicionMedica);
-  row('Declaración de veracidad firmada', r.declaracionVeracidad ? 'Sí' : 'No');
-
-  if(y > 260){ doc.addPage(); y = 18; }
-  y += 10;
-  doc.setDrawColor(...gray);
-  doc.line(20, y+14, 80, y+14);
-  doc.line(130, y+14, 190, y+14);
+  // ===== ENCABEZADO =====
+  doc.setFillColor(...navy);
+  doc.rect(0,0,pageW,20,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.text('FICHA DE DOCUMENTOS PERSONALES DEL TRABAJADOR', pageW/2, 9, {align:'center'});
   doc.setFontSize(8.5);
-  doc.text('Firma del trabajador', 35, y+18);
-  doc.text('Firma / sello de RR.HH.', 142, y+18);
+  doc.setFont('helvetica','normal');
+  doc.text(`Empresa: ${r.empresa||'-'}`, pageW/2, 15, {align:'center'});
+  doc.setFontSize(8);
+  doc.text('VERSIÓN 03', marginR, 9, {align:'right'});
+
+  y = 26;
+
+  // ===== DATOS PERSONALES: fecha ingreso + horario =====
+  sectionBar('DATOS PERSONALES');
+  label('FECHA DE INGRESO', marginL, y);
+  label('HORARIO', 110, y);
+  y += 4.5;
+  value(r.fechaIngreso, marginL, y);
+  const horarioLV = (r.horaIngresoLV && r.horaSalidaLV) ? `L-V ${r.horaIngresoLV} - ${r.horaSalidaLV}` : '-';
+  const horarioSab = (r.horaIngresoSab && r.horaSalidaSab) ? `  SAB: ${r.horaIngresoSab} - ${r.horaSalidaSab}` : '';
+  value(horarioLV + horarioSab, 110, y);
+  y += 7;
+
+  // ===== ÁREA / CARGO / SUELDO / MODALIDAD (col izq) + NAC/BONO/CAT/UNIDAD (col der) =====
+  label('ÁREA', marginL, y); value(r.area, 35, y);
+  label('TIPO DE CONTRATO', 110, y); value(r.tipoContrato, 150, y, {maxWidth:48});
+  y += 5.5;
+  label('CARGO', marginL, y); value(r.cargo, 35, y, {maxWidth:65});
+  label('BONO', 110, y); value(r.recibeBono==='Si' ? `SÍ (S/ ${r.montoBono||'-'})` : 'NO', 150, y);
+  y += 5.5;
+  label('SUELDO', marginL, y); value(r.remuneracion ? `S/ ${r.remuneracion}` : '-', 35, y);
+  label('VIÁTICO', 110, y); value(r.recibeViatico==='Si' ? `SÍ (S/ ${r.montoViatico||'-'})` : 'NO', 150, y);
+  y += 5.5;
+  label('MODALIDAD DE PAGO', marginL, y); value(r.modalidadPago, 50, y);
+  if(r.esConductor === 'Si'){
+    label('TIPO DE UNIDAD', 110, y); value(r.tipoUnidad, 150, y, {maxWidth:48});
+  }
+  y += 7;
+  hr();
+
+  // ===== APELLIDOS Y NOMBRES =====
+  label('APELLIDO PATERNO', marginL, y);
+  label('APELLIDO MATERNO', 80, y);
+  label('NOMBRES', 145, y);
+  y += 4.5;
+  value(r.apellidoPaterno, marginL, y);
+  value(r.apellidoMaterno, 80, y);
+  value(r.nombres, 145, y, {maxWidth:50});
+  y += 7;
+
+  // ===== DOCUMENTO / LICENCIA / PENSIÓN =====
+  label('TIPO DE DOCUMENTO', marginL, y); value(r.tipoDoc, 50, y);
+  label('PENSIÓN', 110, y); value(r.afiliadoPension==='AFP' ? (r.afpNombre||'AFP') : (r.afiliadoPension||'-'), 140, y);
+  y += 5.5;
+  label('N°', marginL, y); value(r.numDoc, 50, y);
+  label('COMISIÓN', 110, y); value(r.comisionAfp, 140, y);
+  y += 5.5;
+  if(r.esConductor === 'Si'){
+    label('LICENCIA', marginL, y); value(`${r.categoriaLicencia||''} ${r.numLicencia||''}`, 50, y);
+    label('CUSPP', 110, y); value(r.cuspp, 140, y);
+    y += 5.5;
+    label('VENC. LICENCIA', marginL, y); value(r.vencimientoLicencia, 50, y);
+    y += 5.5;
+  } else {
+    label('CUSPP', 110, y); value(r.cuspp, 140, y);
+    y += 5.5;
+  }
+  label('F. NAC.', marginL, y); value(r.fechaNacimiento, 50, y);
+  label('TIPO DE SANGRE', 110, y); value(r.grupoSanguineo, 140, y);
+  y += 5.5;
+  label('ESTADO CIVIL', marginL, y); value(r.estadoCivil, 50, y);
+  label('SEXO', 110, y); value(r.sexo, 140, y);
+  y += 5.5;
+  label('TELÉF.', marginL, y); value(r.celular, 50, y);
+  label('CORREO ELECTRÓNICO', 110, y); value(r.correo, 140, y, {maxWidth:52});
+  y += 7;
+  hr();
+
+  // ===== DOMICILIO / CUENTA / BANCO =====
+  label('DOMICILIO ACTUAL', marginL, y); value(r.direccion, 55, y, {maxWidth:140});
+  y += 6.5;
+  label('N° DE CUENTA', marginL, y); value(r.numCuenta || '-', 45, y);
+  label('CCI', 100, y); value(r.cci, 115, y);
+  y += 5.5;
+  label('BANCO', marginL, y); value(r.banco, 45, y);
+  label('TIPO DE CUENTA', 100, y); value(r.tipoCuenta, 130, y);
+  y += 7;
+
+  // ===== LUGAR DE NACIMIENTO / TALLAS =====
+  label('LUGAR DE NACIMIENTO', marginL, y);
+  if(r.esConductor === 'Si'){ label('TALLAS', 150, y); }
+  y += 4.5;
+  label('DEPARTAMENTO', marginL, y); value(r.departamento, 45, y);
+  label('PROVINCIA', 80, y); value(r.provincia, 105, y);
+  label('DISTRITO', 130, y); value(r.distrito, 150, y);
+  if(r.esConductor === 'Si'){
+    y += 5.5;
+    label('POLO', marginL, y); value(r.tallaPolo, 30, y);
+    label('PANTALÓN', 60, y); value(r.tallaPantalon, 90, y);
+    label('ZAPATO', 120, y); value(r.tallaZapato, 150, y);
+  }
+  y += 8;
+  hr();
+
+  // ===== DATOS DE HIJOS / DERECHOHABIENTES =====
+  sectionBar('DATOS DE HIJOS Y DERECHOHABIENTES');
+  if(r.tieneDerechohabientes === 'Si' && r.derechohabientesDetalle){
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(20,20,20);
+    const lines = doc.splitTextToSize(r.derechohabientesDetalle, marginR-marginL-4);
+    checkPageBreak(lines.length*5+4);
+    doc.text(lines, marginL+2, y+4);
+    y += lines.length*5 + 6;
+  } else {
+    value('No registra derechohabientes.', marginL+2, y+3);
+    y += 8;
+  }
+
+  // ===== FAMILIARES DE EMERGENCIA =====
+  sectionBar('DATOS DE FAMILIARES DE EMERGENCIA');
+  checkPageBreak(14);
+  label('NOMBRE', marginL, y); label('PARENTESCO', 80, y); label('OCUPACIÓN', 115, y); label('TELÉFONO', 155, y);
+  y += 4.5;
+  value(r.emergenciaNombre, marginL, y, {maxWidth:65});
+  value(r.emergenciaParentesco, 80, y, {maxWidth:32});
+  value(r.emergenciaOcupacion, 115, y, {maxWidth:37});
+  value(r.emergenciaTelefono, 155, y);
+  y += 5.5;
+  if(r.emergenciaDireccion){
+    label('DIRECCIÓN', marginL, y); value(r.emergenciaDireccion, 35, y, {maxWidth:155});
+    y += 5.5;
+  }
+  y += 2;
+
+  // ===== ESTUDIOS Y EXPERIENCIA =====
+  sectionBar('ESTUDIOS REALIZADOS');
+  checkPageBreak(12);
+  label('GRADO', marginL, y); label('CARRERA', 65, y); label('CENTRO DE ESTUDIOS', 115, y); label('PERIODO', 165, y);
+  y += 4.5;
+  value(r.gradoInstruccion, marginL, y, {maxWidth:50});
+  value(r.carrera, 65, y, {maxWidth:47});
+  value(r.centroEstudios, 115, y, {maxWidth:47});
+  value(r.periodoEstudios, 165, y, {maxWidth:30});
+  y += 7;
+
+  sectionBar('EXPERIENCIA LABORAL');
+  checkPageBreak(16);
+  if(r.experienciaLaboral){
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(20,20,20);
+    const expLines = doc.splitTextToSize(r.experienciaLaboral, marginR-marginL-4);
+    checkPageBreak(expLines.length*5+4);
+    doc.text(expLines, marginL+2, y+4);
+    y += expLines.length*5 + 6;
+  } else {
+    value('No registra.', marginL+2, y+3);
+    y += 8;
+  }
+
+  // ===== DOCUMENTOS DECLARADOS =====
+  sectionBar('DOCUMENTOS DECLARADOS POR EL TRABAJADOR');
+  checkPageBreak(20);
+  const docs = [
+    ['Copia de DNI vigente', r.docDni],
+    ['Copia de licencia de conducir', r.docLicencia],
+    ['Certificado de antecedentes penales y policiales', r.docAntecedentes],
+    ['Declaración jurada de domicilio', r.docDeclaracionDomicilio],
+    ['Copia de recibo de luz o agua', r.docReciboServicios],
+    ['Carné de sanidad / certificado médico', r.docCarnetSanidad]
+  ];
+  doc.setFontSize(9);
+  docs.forEach(([txt, checked])=>{
+    if(r.esConductor !== 'Si' && txt.includes('licencia')) return;
+    checkPageBreak(6);
+    doc.setFont('helvetica','normal');
+    doc.setTextColor(20,20,20);
+    doc.text(checked ? '[X]' : '[ ]', marginL, y);
+    doc.text(txt, marginL+8, y);
+    y += 5;
+  });
+  y += 3;
+
+  // ===== OBSERVACIÓN =====
+  sectionBar('OBSERVACIÓN');
+  checkPageBreak(14);
+  doc.setDrawColor(...lineColor);
+  doc.rect(marginL, y, marginR-marginL, 12);
+  if(r.condicionMedica){
+    value(r.condicionMedica, marginL+2, y+5, {maxWidth:180});
+  }
+  y += 18;
+
+  // ===== FIRMAS =====
+  checkPageBreak(24);
+  y += 8;
+  doc.setDrawColor(...gray);
+  doc.line(25, y, 90, y);
+  doc.line(120, y, 185, y);
+  doc.setFontSize(8.5);
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(20,20,20);
+  doc.text('FIRMA DEL TRABAJADOR', 57.5, y+5, {align:'center'});
+  doc.text('FIRMA / SELLO DEL EMPLEADOR', 152.5, y+5, {align:'center'});
+  doc.setFontSize(7.5);
+  doc.setTextColor(...gray);
+  const fechaGen = r._timestamp ? new Date(r._timestamp).toLocaleDateString('es-PE') : '';
+  doc.text(`Ficha generada el ${fechaGen} — Código de registro: ${r._id||''}`, marginL, 292);
 
   const fileSafeName = `${r.apellidoPaterno||''}_${r.apellidoMaterno||''}_${r.nombres||''}`.replace(/[^a-zA-Z0-9_]/g,'').substring(0,40) || 'ficha';
   doc.save(`Ficha_Ingreso_${fileSafeName}.pdf`);
@@ -728,12 +1025,14 @@ document.getElementById('ingresoForm').addEventListener('submit', async function
     return;
   }
 
+  const CHECKBOX_FIELDS = ['declaracionVeracidad','docDni','docLicencia','docAntecedentes','docDeclaracionDomicilio','docReciboServicios','docCarnetSanidad'];
+
   const data = {};
   new FormData(form).forEach((value, key)=>{
-    if(key === 'declaracionVeracidad'){ data[key] = true; }
+    if(CHECKBOX_FIELDS.includes(key)){ data[key] = true; }
     else { data[key] = value; }
   });
-  if(!('declaracionVeracidad' in data)) data.declaracionVeracidad = false;
+  CHECKBOX_FIELDS.forEach(f=>{ if(!(f in data)) data[f] = false; });
   if(data.empresa === 'Otra' && data.empresaOtra){
     data.empresa = data.empresaOtra.trim();
   }
