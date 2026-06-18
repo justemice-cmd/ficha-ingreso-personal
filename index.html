@@ -752,6 +752,16 @@ function generatePdf(r){
     doc.setTextColor(20,20,20);
     doc.text(String(text||'-'), x, yy, opts||{});
   }
+  // Para campos que pueden ser largos: corta el texto en líneas reales dentro de maxWidth
+  // y devuelve cuántas líneas ocupó, para que el llamador pueda ajustar el avance vertical.
+  function valueWrapped(text, x, yy, maxWidth){
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(20,20,20);
+    const lines = doc.splitTextToSize(String(text||'-'), maxWidth);
+    doc.text(lines, x, yy);
+    return lines.length;
+  }
   function sectionBar(title){
     checkPageBreak(10);
     doc.setFillColor(...navy);
@@ -796,19 +806,24 @@ function generatePdf(r){
 
   // ===== ÁREA / CARGO / SUELDO / MODALIDAD (col izq) + NAC/BONO/CAT/UNIDAD (col der) =====
   label('ÁREA', marginL, y); value(r.area, 35, y);
-  label('TIPO DE CONTRATO', 110, y); value(r.tipoContrato, 150, y, {maxWidth:48});
-  y += 5.5;
-  label('CARGO', marginL, y); value(r.cargo, 35, y, {maxWidth:65});
+  label('TIPO DE CONTRATO', 110, y);
+  const nLinesContrato = valueWrapped(r.tipoContrato, 150, y, 46);
+  y += Math.max(5.5, nLinesContrato*4.5);
+  label('CARGO', marginL, y);
+  const nLinesCargo = valueWrapped(r.cargo, 35, y, 62);
   label('BONO', 110, y); value(r.recibeBono==='Si' ? `SÍ (S/ ${r.montoBono||'-'})` : 'NO', 150, y);
-  y += 5.5;
+  y += Math.max(5.5, nLinesCargo*4.5);
   label('SUELDO', marginL, y); value(r.remuneracion ? `S/ ${r.remuneracion}` : '-', 35, y);
   label('VIÁTICO', 110, y); value(r.recibeViatico==='Si' ? `SÍ (S/ ${r.montoViatico||'-'})` : 'NO', 150, y);
   y += 5.5;
   label('MODALIDAD DE PAGO', marginL, y); value(r.modalidadPago, 50, y);
   if(r.esConductor === 'Si'){
-    label('TIPO DE UNIDAD', 110, y); value(r.tipoUnidad, 150, y, {maxWidth:48});
+    label('TIPO DE UNIDAD', 110, y);
+    const nLinesUnidad = valueWrapped(r.tipoUnidad, 150, y, 46);
+    y += Math.max(7, nLinesUnidad*4.5+1.5);
+  } else {
+    y += 7;
   }
-  y += 7;
   hr();
 
   // ===== APELLIDOS Y NOMBRES =====
@@ -818,8 +833,8 @@ function generatePdf(r){
   y += 4.5;
   value(r.apellidoPaterno, marginL, y);
   value(r.apellidoMaterno, 80, y);
-  value(r.nombres, 145, y, {maxWidth:50});
-  y += 7;
+  const nLinesNombres = valueWrapped(r.nombres, 145, y, marginR-145);
+  y += Math.max(7, nLinesNombres*4.5+2.5);
 
   // ===== DOCUMENTO / LICENCIA / PENSIÓN =====
   label('TIPO DE DOCUMENTO', marginL, y); value(r.tipoDoc, 50, y);
@@ -845,13 +860,17 @@ function generatePdf(r){
   label('SEXO', 110, y); value(r.sexo, 140, y);
   y += 5.5;
   label('TELÉF.', marginL, y); value(r.celular, 50, y);
-  label('CORREO ELECTRÓNICO', 110, y); value(r.correo, 140, y, {maxWidth:52});
-  y += 7;
+  y += 5.5;
+  label('CORREO ELECTRÓNICO', marginL, y);
+  const nLinesCorreo = valueWrapped(r.correo, 50, y, marginR-50);
+  y += Math.max(5.5, nLinesCorreo*4.5);
+  y += 1.5;
   hr();
 
   // ===== DOMICILIO / CUENTA / BANCO =====
-  label('DOMICILIO ACTUAL', marginL, y); value(r.direccion, 55, y, {maxWidth:140});
-  y += 6.5;
+  label('DOMICILIO ACTUAL', marginL, y);
+  const nLinesDir = valueWrapped(r.direccion, 55, y, marginR-55);
+  y += Math.max(6.5, nLinesDir*4.5+2);
   label('N° DE CUENTA', marginL, y); value(r.numCuenta || '-', 45, y);
   label('CCI', 100, y); value(r.cci, 115, y);
   y += 5.5;
@@ -895,14 +914,17 @@ function generatePdf(r){
   checkPageBreak(14);
   label('NOMBRE', marginL, y); label('PARENTESCO', 80, y); label('OCUPACIÓN', 115, y); label('TELÉFONO', 155, y);
   y += 4.5;
-  value(r.emergenciaNombre, marginL, y, {maxWidth:65});
-  value(r.emergenciaParentesco, 80, y, {maxWidth:32});
-  value(r.emergenciaOcupacion, 115, y, {maxWidth:37});
-  value(r.emergenciaTelefono, 155, y);
-  y += 5.5;
+  const nLinesEmerg = Math.max(
+    valueWrapped(r.emergenciaNombre, marginL, y, 33),
+    valueWrapped(r.emergenciaParentesco, 80, y, 30),
+    valueWrapped(r.emergenciaOcupacion, 115, y, 35),
+    valueWrapped(r.emergenciaTelefono, 155, y, marginR-155)
+  );
+  y += Math.max(5.5, nLinesEmerg*4.5);
   if(r.emergenciaDireccion){
-    label('DIRECCIÓN', marginL, y); value(r.emergenciaDireccion, 35, y, {maxWidth:155});
-    y += 5.5;
+    label('DIRECCIÓN', marginL, y);
+    const nLinesDirEmerg = valueWrapped(r.emergenciaDireccion, 35, y, marginR-35);
+    y += Math.max(5.5, nLinesDirEmerg*4.5);
   }
   y += 2;
 
@@ -911,11 +933,13 @@ function generatePdf(r){
   checkPageBreak(12);
   label('GRADO', marginL, y); label('CARRERA', 65, y); label('CENTRO DE ESTUDIOS', 115, y); label('PERIODO', 165, y);
   y += 4.5;
-  value(r.gradoInstruccion, marginL, y, {maxWidth:50});
-  value(r.carrera, 65, y, {maxWidth:47});
-  value(r.centroEstudios, 115, y, {maxWidth:47});
-  value(r.periodoEstudios, 165, y, {maxWidth:30});
-  y += 7;
+  const nLinesEstudios = Math.max(
+    valueWrapped(r.gradoInstruccion, marginL, y, 50),
+    valueWrapped(r.carrera, 65, y, 47),
+    valueWrapped(r.centroEstudios, 115, y, 47),
+    valueWrapped(r.periodoEstudios, 165, y, marginR-165)
+  );
+  y += Math.max(7, nLinesEstudios*4.5+2.5);
 
   sectionBar('EXPERIENCIA LABORAL');
   checkPageBreak(16);
@@ -961,7 +985,7 @@ function generatePdf(r){
   doc.setDrawColor(...lineColor);
   doc.rect(marginL, y, marginR-marginL, 12);
   if(r.condicionMedica){
-    value(r.condicionMedica, marginL+2, y+5, {maxWidth:180});
+    valueWrapped(r.condicionMedica, marginL+2, y+5, marginR-marginL-4);
   }
   y += 18;
 
